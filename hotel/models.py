@@ -6,6 +6,6 @@ class HotelRoom(models.Model):
 
 
 class Booking(models.Model):
-    room = models.ForeignKey(HotelRoom, related_name='bookings', on_delete=models.CASCADE)
+    room = models.ForeignKey( HotelRoom, related_name='bookings', on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()
