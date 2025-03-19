@@ -1,4 +1,3 @@
-# hotel/services/booking_service.py
 from hotel.models import Booking
 from datetime import date
 

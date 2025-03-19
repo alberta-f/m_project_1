@@ -24,7 +24,10 @@ class BookingSerializer(BaseSerializer):
                 'Дата начала должна быть раньше даты окончания'
             )
         
-        if not is_room_available(data['room'], data['start_date'], data['end_date']):
+        if not is_room_available(data['room'], 
+                                 data['start_date'], 
+                                 data['end_date']):
+            
             raise serializers.ValidationError(
                 'Номер занят в указанные даты'
             )
