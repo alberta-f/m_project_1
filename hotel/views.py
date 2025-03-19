@@ -4,19 +4,10 @@ from rest_framework import status
 
 from .models import HotelRoom, Booking
 from .serializers import HotelRoomSerializer, BookingSerializer
+from .room_service import sort_rooms, filter_rooms
 
 
 # Create your views here.
-def apply_sorting(queryset, sort_by, order):
-    if sort_by in ('price_per_night', 'created_at'):
-
-        if order == 'desc':
-            sort_by = f'-{sort_by}'
-        
-        return queryset.order_by(sort_by)
-    return queryset
-
-
 class BaseCRUDView(APIView):
     model = None
     serializer_class = None
@@ -44,11 +35,7 @@ class BaseCRUDView(APIView):
     
 
     def get(self, request):
-        sort_by = request.query_params.get('sort_by')
-        order = request.query_params.get('order', 'asc')
-
         queryset = self.model.objects.all()
-        queryset = apply_sorting(queryset, sort_by, order)
 
         serializer = self.serializer_class(queryset, many=True)
         
@@ -98,6 +85,26 @@ class BaseCRUDView(APIView):
 class HotelRoomCRUDView(BaseCRUDView):
     model = HotelRoom
     serializer_class = HotelRoomSerializer
+
+
+    def get(self, request):
+        sort_by = request.query_params.get('sort_by')
+        order = request.query_params.get('order', 'asc')
+
+        min_price = request.query_params.get('min_price')
+        max_price = request.query_params.get('max_price')
+
+        queryset = self.model.objects.all()
+        
+        queryset = filter_rooms(queryset, 
+                                min_price=min_price, 
+                                max_price=max_price)
+        queryset = sort_rooms(queryset, sort_by, order)
+
+        serializer = self.serializer_class(queryset, many=True)
+        
+        return Response(serializer.data, 
+                        status=status.HTTP_200_OK)
 
 
 class BookingCRUDView(BaseCRUDView):
