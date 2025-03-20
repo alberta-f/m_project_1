@@ -7,3 +7,7 @@ def is_room_available(room, start_date: date, end_date: date) -> bool:
         start_date__lt=end_date,
         end_date__gt=start_date
     ).exists()
+
+
+def is_room_exists(room, start_date: date):
+    return date.fromisoformat(room.created_at) <= start_date

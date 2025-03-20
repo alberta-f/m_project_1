@@ -4,7 +4,7 @@ from rest_framework import status
 
 from .models import HotelRoom, Booking
 from .serializers import HotelRoomSerializer, BookingSerializer
-from .room_service import sort_rooms, filter_rooms
+from .services.room_service import sort_rooms, filter_rooms
 
 
 # Create your views here.

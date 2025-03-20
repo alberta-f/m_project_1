@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import HotelRoom, Booking
-from .booking_service import is_room_available
+from .services.booking_service import is_room_available, is_room_exists
 
 class BaseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,6 +24,12 @@ class BookingSerializer(BaseSerializer):
                 'Дата начала должна быть раньше даты окончания'
             )
         
+        if not is_room_exists(data['room'],
+                              data['start_date']):
+            raise serializers.ValidationError(
+                'Нельзя бронировать комнату до ее создания'
+            )
+        
         if not is_room_available(data['room'], 
                                  data['start_date'], 
                                  data['end_date']):
@@ -31,5 +37,6 @@ class BookingSerializer(BaseSerializer):
             raise serializers.ValidationError(
                 'Номер занят в указанные даты'
             )
+        
         return data
     
