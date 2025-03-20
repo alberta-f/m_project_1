@@ -90,7 +90,10 @@ class HotelRoomCRUDView(BaseCRUDView):
     serializer_class = HotelRoomSerializer
 
 
-    def get(self, request):
+    def get(self, request, pk=None):
+        if pk:
+            return self.get_one(request, pk)
+        
         sort_by = request.query_params.get('sort_by')
         order = request.query_params.get('order', 'asc')
 
