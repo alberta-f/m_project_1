@@ -34,7 +34,10 @@ class BaseCRUDView(APIView):
                         status=status.HTTP_404_NOT_FOUND)
     
 
-    def get(self, request):
+    def get(self, request, pk=None):
+        if pk:
+            return self.get_one(request, pk)
+        
         queryset = self.model.objects.all()
 
         serializer = self.serializer_class(queryset, many=True)
