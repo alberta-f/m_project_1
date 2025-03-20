@@ -54,6 +54,21 @@ class HotelRoomSerializerTest(TestCase):
 
         self.assertEqual(room.price_per_night, 500)
         self.assertEqual(room.created_at, date.today())
+    
+
+    def test_created_at_cannot_be_in_future(self):
+        future_date = (date.today().replace(year=date.today().year + 1)).isoformat()
+
+        data = {
+            'price_per_night': 500,
+            'created_at': future_date
+        }
+
+        serializer = HotelRoomSerializer(data=data)
+        
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('Дата создания не может быть в будущем', str(serializer.errors))
+
 
     def test_create_room_with_custom_created_at(self):
         data = {

@@ -4,6 +4,8 @@ from .models import HotelRoom, Booking
 from .services.booking_service import is_room_available, is_room_exists
 from .utils import to_date
 
+from datetime import date
+
 
 class BaseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,6 +16,14 @@ class HotelRoomSerializer(BaseSerializer):
     class Meta:
         model = HotelRoom
         fields = '__all__'
+
+    def validate_created_at(self, value):
+        if date.today() < value:
+            raise serializers.ValidationError(
+                'Дата создания не может быть в будущем'
+            )
+        
+        return value
 
 
 class BookingSerializer(BaseSerializer): 
