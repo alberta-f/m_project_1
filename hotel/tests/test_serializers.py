@@ -1,7 +1,9 @@
 from django.test import TestCase
 
 from hotel.models import HotelRoom
-from hotel.serializers import BookingSerializer
+from hotel.serializers import BookingSerializer, HotelRoomSerializer
+
+from datetime import date
 
 
 class BookingSerializerTest(TestCase):
@@ -40,3 +42,26 @@ class BookingSerializerTest(TestCase):
         self.assertIn('Нельзя бронировать комнату до ее создания', 
                       str(serializer.errors['non_field_errors'][0]))
 
+
+class HotelRoomSerializerTest(TestCase):
+    def test_create_room_with_default_created_at(self):
+        data = {
+            'price_per_night': 500
+        }
+        serializer = HotelRoomSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        room = serializer.save()
+
+        self.assertEqual(room.price_per_night, 500)
+        self.assertEqual(room.created_at, date.today())
+
+    def test_create_room_with_custom_created_at(self):
+        data = {
+            'price_per_night': 500,
+            'created_at': '2025-01-01'
+        }
+        serializer = HotelRoomSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        room = serializer.save()
+
+        self.assertEqual(room.created_at, date(2025, 1, 1))
