@@ -1,9 +1,10 @@
 from django.db import models
+from datetime import date
 
 # Create your models here.
 class HotelRoom(models.Model):
     price_per_night = models.IntegerField()
-    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateField(default=date.today)
 
 
 class Booking(models.Model):
