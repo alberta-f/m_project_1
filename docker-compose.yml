@@ -4,9 +4,9 @@ services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_DB: hotel_db
-      POSTGRES_USER: hotel_user
-      POSTGRES_PASSWORD: hotel_pass
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -24,7 +24,7 @@ services:
     depends_on:
       - db
     environment:
-      - DATABASE_URL=postgres://hotel_user:hotel_pass@db:5432/hotel_db
+      - DATABASE_URL=${DATABASE_URL}
 
 volumes:
   postgres_data:
