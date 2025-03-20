@@ -57,8 +57,11 @@ class BaseCRUDView(APIView):
 
                 return Response(serializer.data)
         
-        return Response(serializer.errors, 
-                        status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, 
+                            status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response({'errors': 'Not found'},
+                        status=status.HTTP_404_NOT_FOUND)
     
 
     def post(self, request):
