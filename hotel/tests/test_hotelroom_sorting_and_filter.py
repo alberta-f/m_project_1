@@ -38,3 +38,33 @@ class HotelRoomSortingAPITest(APITestCase):
 
         ids = [room['id'] for room in response.data]
         self.assertEqual(ids, [self.room2.id, self.room3.id, self.room1.id])
+
+
+class HotelRoomFilteringAPITest(APITestCase):
+    def setUp(self):
+        self.room1 = HotelRoom.objects.create(price_per_night=300, 
+                                              created_at='2025-01-01')
+        self.room2 = HotelRoom.objects.create(price_per_night=500, 
+                                              created_at='2025-01-02')
+        self.room3 = HotelRoom.objects.create(price_per_night=700, 
+                                              created_at='2025-01-03')
+
+
+    def test_min_price_filter(self):
+        response = self.client.get('/rooms/?min_price=400')
+
+        ids = [room['id'] for room in response.data]
+        self.assertEqual(ids, [self.room2.id, self.room3.id])
+
+
+    def test_max_price_filter(self):
+        response = self.client.get('/rooms/?max_price=500')
+
+        ids = [room['id'] for room in response.data]
+        self.assertEqual(ids, [self.room1.id, self.room2.id])
+
+
+    def test_min_and_max_price_filter(self):
+        response = self.client.get('/rooms/?min_price=400&max_price=600')
+        ids = [room['id'] for room in response.data]
+        self.assertEqual(ids, [self.room2.id])
