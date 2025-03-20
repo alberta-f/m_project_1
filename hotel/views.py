@@ -7,13 +7,20 @@ from .serializers import HotelRoomSerializer, BookingSerializer
 from .services.room_service import sort_rooms, filter_rooms
 
 
-# Create your views here.
 class BaseCRUDView(APIView):
+    """
+    Базовый CRUD класс для работы с моделями
+    """
+    
     model = None
     serializer_class = None
 
     
     def get_object(self, pk):
+        """
+        Получает объект по pk или -> None
+        """
+        
         try:
             return self.model.objects.get(pk=pk)
 
@@ -22,6 +29,12 @@ class BaseCRUDView(APIView):
         
 
     def get_one(self, request, pk):
+        """
+        -> один объект по pk и
+            статусом 200, если все ОК,
+            статусом 404, если объект не найден
+        """
+        
         instance = self.get_object(pk)
 
         if instance:
@@ -35,6 +48,15 @@ class BaseCRUDView(APIView):
     
 
     def get(self, request, pk=None):
+        """
+        Возвращает
+
+            -> список объектов, если pk не задан
+            -> один объект, если pk задан
+        
+        -> статус 200
+        """
+
         if pk:
             return self.get_one(request, pk)
         
@@ -46,25 +68,15 @@ class BaseCRUDView(APIView):
                         status=status.HTTP_200_OK)
     
 
-    def put(self, request, pk):
-        instance = self.get_object(pk)
-
-        if instance:
-            serializer = self.serializer_class(instance, data=request.data)
-
-            if serializer.is_valid():
-                serializer.save()
-
-                return Response(serializer.data)
-        
-            return Response(serializer.errors, 
-                            status=status.HTTP_400_BAD_REQUEST)
-        
-        return Response({'errors': 'Not found'},
-                        status=status.HTTP_404_NOT_FOUND)
-    
-
     def post(self, request):
+        """
+        Создает объект
+
+        -> JSON с созданным объектом и 
+            статусом 201, если все ОК,
+            статусом 400, если данные невалидны
+        """
+        
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
@@ -77,7 +89,42 @@ class BaseCRUDView(APIView):
                         status=status.HTTP_400_BAD_REQUEST)
     
 
+    def put(self, request, pk):
+        """
+        Обновляет объект по pk
+
+        -> JSON с созданным объектом и 
+            статусом 200, если все ОК,
+            статусом 400, если данные невалидны,
+            статусом 404, если объект не найден
+        """
+
+        instance = self.get_object(pk)
+
+        if instance:
+            serializer = self.serializer_class(instance, data=request.data)
+
+            if serializer.is_valid():
+                serializer.save()
+
+                return Response(serializer.data,
+                                status=status.HTTP_200_OK)
+        
+            return Response(serializer.errors, 
+                            status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response({'errors': 'Not found'},
+                        status=status.HTTP_404_NOT_FOUND)
+    
+
     def delete(self, request, pk):
+        """
+        Удаляет объект по pk
+
+        -> JSON с созданным объектом и 
+            статусом 204, если все ОК,
+            статусом 404, если объект не найден
+            """
         instance = self.get_object(pk)
 
         if instance:
@@ -89,11 +136,19 @@ class BaseCRUDView(APIView):
 
 
 class HotelRoomCRUDView(BaseCRUDView):
+    """
+    CRUD класс для работы с HotelRoom
+    """
+
     model = HotelRoom
     serializer_class = HotelRoomSerializer
 
 
     def get(self, request, pk=None):
+        """
+        get-запрос с сортировкой и фильтром
+        """
+        
         if pk:
             return self.get_one(request, pk)
         
@@ -117,5 +172,10 @@ class HotelRoomCRUDView(BaseCRUDView):
 
 
 class BookingCRUDView(BaseCRUDView):
+    """
+    CRUD класс для работы с Booking
+    """
+
     model = Booking
     serializer_class = BookingSerializer
+    

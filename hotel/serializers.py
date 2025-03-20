@@ -13,11 +13,22 @@ class BaseSerializer(serializers.ModelSerializer):
 
 
 class HotelRoomSerializer(BaseSerializer):
+    """
+    Сериализует для модели HotelRoom
+    
+    Валидирует:
+        -created_at не находится в будущем
+    """
+
     class Meta:
         model = HotelRoom
         fields = '__all__'
 
     def validate_created_at(self, value):
+        """
+        Проверяет, что created_at не находится в будущем
+        """
+
         if date.today() < value:
             raise serializers.ValidationError(
                 'Дата создания не может быть в будущем'
@@ -27,6 +38,15 @@ class HotelRoomSerializer(BaseSerializer):
 
 
 class BookingSerializer(BaseSerializer): 
+    """
+    Сериализатор для модели Booking
+    
+    Валидирует:
+        - даты бронирования (start_date < end_date)
+        - наличие комнаты к моменту бронирования
+        - отсутствие пересечений даты
+    """
+    
     class Meta:
         model = Booking
         fields = '__all__'
